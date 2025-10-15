@@ -16,6 +16,7 @@ export default function Profile() {
         setLoggedIn(true);
       } else {
         setLoggedIn(false);
+        setEmail('');
       }
     });
 
@@ -24,8 +25,9 @@ export default function Profile() {
 
   const handleLogout = () => {
     signOut(auth).then(() => {
+      setLoggedIn(false);
+      setEmail('');
       navigate('/');
-      window.location.reload();
     });
   };
 
