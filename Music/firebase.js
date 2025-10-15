@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "ТВОЙ_API_KEY",
-  authDomain: "ТВОЙ_PROJECT_ID.firebaseapp.com",
-  projectId: "ТВОЙ_PROJECT_ID",
-  storageBucket: "ТВОЙ_PROJECT_ID.appspot.com",
-  messagingSenderId: "ТВОЙ_SENDER_ID",
-  appId: "ТВОЙ_APP_ID"
+  apiKey: "AIzaSyAOygqrGyyE6sLfaVmq59X-KR7J9PGqU-w",
+  authDomain: "coffee-spark-ai-barista-55105.firebaseapp.com",
+  projectId: "coffee-spark-ai-barista-55105",
+  storageBucket: "coffee-spark-ai-barista-55105.firebasestorage.app",
+  messagingSenderId: "272304240891",
+  appId: "1:272304240891:web:e2a59058f421b00de5585e"
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const auth = getAuth(app); // ✅ вот эта строка нужна для авторизации
