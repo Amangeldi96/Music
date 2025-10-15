@@ -24,7 +24,7 @@ export default function Menu() {
     const checkbox = document.getElementById("p1");
     if (checkbox) checkbox.checked = false;
 
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true);
         setUserEmail(user.email);
@@ -33,19 +33,35 @@ export default function Menu() {
         setUserEmail('');
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   // Обработка входа
   const handleLogin = () => {
+    if (!loginEmail || !loginPassword) {
+      setLoginMessage('❌ Заполните все поля');
+      return;
+    }
+
     signInWithEmailAndPassword(auth, loginEmail, loginPassword)
-      .then((userCredential) => {
+      .then(() => {
         setLoginMessage('✅ Вход выполнен');
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        const checkbox = document.getElementById("p1");
+        if (checkbox) checkbox.checked = false;
+        setLoginEmail('');
+        setLoginPassword('');
       })
       .catch((error) => {
-        setLoginMessage('❌ Неверный email или пароль');
+        if (error.code === 'auth/user-not-found') {
+          setLoginMessage('❌ Вы не зарегистрированы');
+        } else if (error.code === 'auth/wrong-password') {
+          setLoginMessage('❌ Неверный пароль');
+        } else if (error.code === 'auth/invalid-email') {
+          setLoginMessage('❌ Неверный формат email');
+        } else {
+          setLoginMessage(`❌ Ошибка: ${error.message}`);
+        }
       });
   };
 
@@ -54,7 +70,9 @@ export default function Menu() {
     signOut(auth).then(() => {
       const checkbox = document.getElementById("p1");
       if (checkbox) checkbox.checked = false;
-      window.location.reload();
+      setLoginEmail('');
+      setLoginPassword('');
+      setLoginMessage('');
     });
   };
 
