@@ -3,6 +3,12 @@ import './css/menu.css';
 import './css/popup.css';
 import { NavLink, useNavigate } from "react-router-dom";
 import login from './img/Frame.svg';
+import { auth } from "../firebase";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "firebase/auth";
 
 export default function Menu() {
   const navigate = useNavigate();
@@ -18,56 +24,38 @@ export default function Menu() {
     const checkbox = document.getElementById("p1");
     if (checkbox) checkbox.checked = false;
 
-    const loginFlag = localStorage.getItem('isLoggedIn');
-    const savedEmail = localStorage.getItem('loggedEmail');
-    if (loginFlag === 'true' && savedEmail) {
-      setIsLoggedIn(true);
-      setUserEmail(savedEmail);
-    }
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        setUserEmail(user.email);
+      } else {
+        setIsLoggedIn(false);
+        setUserEmail('');
+      }
+    });
   }, []);
 
   // Обработка входа
   const handleLogin = () => {
-    const savedEmail = localStorage.getItem('regEmail');
-    const savedPassword = localStorage.getItem('regPassword');
-
-    if (!savedEmail || !savedPassword) {
-      setLoginMessage('❌ Вы не зарегистрированы');
-      return;
-    }
-
-    if (loginEmail === savedEmail && loginPassword === savedPassword) {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('loggedEmail', loginEmail);
-      setIsLoggedIn(true);
-      setUserEmail(loginEmail);
-      setLoginMessage('✅ Вход выполнен');
-
-      // 🔄 Перезагрузка страницы после входа
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-    } else {
-      setLoginMessage('❌ Неверный email или пароль');
-    }
+    signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+      .then((userCredential) => {
+        setLoginMessage('✅ Вход выполнен');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      })
+      .catch((error) => {
+        setLoginMessage('❌ Неверный email или пароль');
+      });
   };
 
   // Обработка выхода
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('loggedEmail');
-
-    const checkbox = document.getElementById("p1");
-    if (checkbox) checkbox.checked = false;
-
-    setIsLoggedIn(false);
-    setUserEmail('');
-    setLoginEmail('');
-    setLoginPassword('');
-    setLoginMessage('');
-
-    // 🔄 Перезагрузка страницы после выхода
-    window.location.reload();
+    signOut(auth).then(() => {
+      const checkbox = document.getElementById("p1");
+      if (checkbox) checkbox.checked = false;
+      window.location.reload();
+    });
   };
 
   return (
@@ -78,6 +66,9 @@ export default function Menu() {
           <NavLink to="/">Главный</NavLink>
           <NavLink to="/Album">Альбом</NavLink>
           <NavLink to="/Genre">Жанр</NavLink>
+          {isLoggedIn && (
+            <NavLink to="/profile" className="profile-direct">Профиль</NavLink>
+          )}
         </nav>
 
         {/* Кнопка входа */}
@@ -96,7 +87,7 @@ export default function Menu() {
                 <>
                   <input
                     type="text"
-                    placeholder="Email или телефон"
+                    placeholder="Email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                   /> <br />
