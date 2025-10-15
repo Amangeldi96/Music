@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './css/regstr.css';
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Regstr() {
   const [email, setEmail] = useState('');
@@ -20,20 +22,24 @@ export default function Regstr() {
       return;
     }
 
-    // Сохраняем данные регистрации
-    localStorage.setItem('regEmail', email);
-    localStorage.setItem('regPassword', password);
-
-    // Сохраняем флаг входа
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('loggedEmail', email);
-
-    setMessage('✅ Регистрация прошла успешно!');
-
-    // Переход на страницу профиля через 1 секунду
-    setTimeout(() => {
-      navigate('/profile');
-    }, 1000);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        setMessage('✅ Регистрация прошла успешно!');
+        setTimeout(() => {
+          navigate('/profile');
+        }, 1000);
+      })
+      .catch((error) => {
+        if (error.code === 'auth/email-already-in-use') {
+          setMessage('❌ Этот email уже зарегистрирован');
+        } else if (error.code === 'auth/invalid-email') {
+          setMessage('❌ Неверный формат email');
+        } else if (error.code === 'auth/weak-password') {
+          setMessage('❌ Пароль слишком слабый (минимум 6 символов)');
+        } else {
+          setMessage(`❌ Ошибка: ${error.message}`);
+        }
+      });
   };
 
   return (
@@ -44,7 +50,7 @@ export default function Regstr() {
       <input
         className="input"
         type="text"
-        placeholder="Email или телефон"
+        placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       /> <br />
