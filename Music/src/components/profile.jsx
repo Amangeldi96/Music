@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/profile.css';
+import { auth } from '../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -8,24 +10,23 @@ export default function Profile() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const savedEmail = localStorage.getItem('loggedEmail');
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmail(user.email);
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    });
 
-    if (isLoggedIn === 'true' && savedEmail) {
-      setEmail(savedEmail);
-      setLoggedIn(true);
-    } else {
-      setLoggedIn(false);
-    }
+    return () => unsubscribe(); // очистка подписки
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('loggedEmail');
-
-    // 🔄 Обновляем страницу, чтобы Menu.jsx тоже сбросился
-    navigate('/');
-    window.location.reload();
+    signOut(auth).then(() => {
+      navigate('/');
+      window.location.reload();
+    });
   };
 
   if (!loggedIn) {
