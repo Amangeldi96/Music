@@ -2,13 +2,14 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAOygqrGyyE6sLfaVmq59X-KR7J9PGqU-w",
-  authDomain: "coffee-spark-ai-barista-55105.firebaseapp.com",
-  projectId: "coffee-spark-ai-barista-55105",
-  storageBucket: "coffee-spark-ai-barista-55105.firebasestorage.app",
-  messagingSenderId: "272304240891",
-  appId: "1:272304240891:web:e2a59058f421b00de5585e"
+  apiKey: "AIzaSyBPKSh0oMHIXTgX1mHRfsRHG5tpLqtufIw",
+  authDomain: "music-c309d.firebaseapp.com",
+  projectId: "music-c309d",
+  storageBucket: "music-c309d.appspot.com",
+  messagingSenderId: "133923593231",
+  appId: "1:133923593231:web:716900e5cbc9681e39577a",
+  measurementId: "G-FDF3VQPQDQ"
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app); // ✅ вот эта строка нужна для авторизации
+export const auth = getAuth(app);
