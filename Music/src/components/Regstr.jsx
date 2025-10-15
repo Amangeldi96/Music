@@ -22,12 +22,18 @@ export default function Regstr() {
       return;
     }
 
+    if (password.length < 6) {
+      setMessage('❌ Пароль должен быть минимум 6 символов');
+      return;
+    }
+
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(() => {
         setMessage('✅ Регистрация прошла успешно!');
-        setTimeout(() => {
-          navigate('/profile');
-        }, 1000);
+        setEmail('');
+        setPassword('');
+        setRepeatPassword('');
+        navigate('/profile');
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
