@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/profile.css';
+import { supabase } from '../SupabaseClient';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -8,22 +9,35 @@ export default function Profile() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const savedEmail = localStorage.getItem('loggedEmail');
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setEmail(session.user.email);
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    };
 
-    if (isLoggedIn === 'true' && savedEmail) {
-      setEmail(savedEmail);
-      setLoggedIn(true);
-    } else {
-      setLoggedIn(false);
-    }
+    checkSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setEmail(session.user.email);
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+        setEmail('');
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('loggedEmail');
-
-    // 🔄 Обновляем страницу, чтобы Menu.jsx тоже сбросился
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/');
     window.location.reload();
   };

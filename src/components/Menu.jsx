@@ -3,6 +3,7 @@ import './css/menu.css';
 import './css/popup.css';
 import { NavLink, useNavigate } from "react-router-dom";
 import login from './img/Frame.svg';
+import { supabase } from "../SupabaseClient";
 
 export default function Menu() {
   const navigate = useNavigate();
@@ -13,49 +14,56 @@ export default function Menu() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
 
-  // Проверка входа при загрузке
+  // Проверка сессии при загрузке
   useEffect(() => {
     const checkbox = document.getElementById("p1");
     if (checkbox) checkbox.checked = false;
 
-    const loginFlag = localStorage.getItem('isLoggedIn');
-    const savedEmail = localStorage.getItem('loggedEmail');
-    if (loginFlag === 'true' && savedEmail) {
-      setIsLoggedIn(true);
-      setUserEmail(savedEmail);
-    }
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsLoggedIn(true);
+        setUserEmail(session.user.email);
+      }
+    };
+
+    checkSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setIsLoggedIn(true);
+        setUserEmail(session.user.email);
+      } else {
+        setIsLoggedIn(false);
+        setUserEmail('');
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   // Обработка входа
-  const handleLogin = () => {
-    const savedEmail = localStorage.getItem('regEmail');
-    const savedPassword = localStorage.getItem('regPassword');
+  const handleLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: loginEmail,
+      password: loginPassword,
+    });
 
-    if (!savedEmail || !savedPassword) {
-      setLoginMessage('❌ Вы не зарегистрированы');
-      return;
-    }
-
-    if (loginEmail === savedEmail && loginPassword === savedPassword) {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('loggedEmail', loginEmail);
-      setIsLoggedIn(true);
-      setUserEmail(loginEmail);
+    if (error) {
+      setLoginMessage('❌ Неверный email или пароль');
+    } else {
       setLoginMessage('✅ Вход выполнен');
-
-      // 🔄 Перезагрузка страницы после входа
       setTimeout(() => {
         window.location.reload();
       }, 500);
-    } else {
-      setLoginMessage('❌ Неверный email или пароль');
     }
   };
 
   // Обработка выхода
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('loggedEmail');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
 
     const checkbox = document.getElementById("p1");
     if (checkbox) checkbox.checked = false;
@@ -65,8 +73,6 @@ export default function Menu() {
     setLoginEmail('');
     setLoginPassword('');
     setLoginMessage('');
-
-    // 🔄 Перезагрузка страницы после выхода
     window.location.reload();
   };
 
@@ -96,7 +102,7 @@ export default function Menu() {
                 <>
                   <input
                     type="text"
-                    placeholder="Email или телефон"
+                    placeholder="Email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                   /> <br />

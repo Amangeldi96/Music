@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../SupabaseClient"; // подключение SDK
 import './css/regstr.css';
 
 export default function Regstr() {
@@ -9,7 +10,7 @@ export default function Regstr() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!email || !password || !repeatPassword) {
       setMessage('❌ Заполните все поля');
       return;
@@ -20,20 +21,19 @@ export default function Regstr() {
       return;
     }
 
-    // Сохраняем данные регистрации
-    localStorage.setItem('regEmail', email);
-    localStorage.setItem('regPassword', password);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-    // Сохраняем флаг входа
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('loggedEmail', email);
-
-    setMessage('✅ Регистрация прошла успешно!');
-
-    // Переход на страницу профиля через 1 секунду
-    setTimeout(() => {
-      navigate('/profile');
-    }, 1000);
+    if (error) {
+      setMessage('❌ Ошибка регистрации: ' + error.message);
+    } else {
+      setMessage('✅ Регистрация успешна! Проверь почту для подтверждения.');
+      setTimeout(() => {
+        navigate('/profile');
+      }, 1500);
+    }
   };
 
   return (
@@ -44,7 +44,7 @@ export default function Regstr() {
       <input
         className="input"
         type="text"
-        placeholder="Email или телефон"
+        placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       /> <br />
