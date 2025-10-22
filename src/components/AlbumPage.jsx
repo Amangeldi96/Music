@@ -5,6 +5,7 @@ import { useParams, useLocation } from "react-router-dom";
 
 import album1 from "./img/Album1.jpeg";
 import album2 from "./img/Album2.jpeg";
+import album3 from "./img/Album3.jpeg";
 
 import track1 from "./assets/Album/Mirbek/mirbek-atabekov-kechki-bishkek.mp3";
 import track2 from "./assets/Album/Mirbek/mirbek-atabekov-oshondo.mp3";
@@ -38,7 +39,7 @@ const albumData = [
 	  {
     albumName: "Гүлжигит Сатыбеков",
     description: "Кыргыз эл артиси.",
-    image: album2,
+    image: album3,
     tracks: [
       { title: "Өзгөчө күн", src: ozgochokun },
       { title: "Таранчым", src: taranchym },
