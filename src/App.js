@@ -2,6 +2,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 
 import Profile from './components/profile';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import Menu from './components/Menu';
 import Regstr from './components/Regstr';
@@ -26,7 +27,6 @@ function App() {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Останавливаем музыку при смене страницы
   useEffect(() => {
     const audio = audioRef.current;
     audio.pause();
@@ -34,7 +34,6 @@ function App() {
     setCurrentTrack(null);
   }, [location.pathname]);
 
-  // Запуск выбранного трека
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -54,7 +53,6 @@ function App() {
     };
   }, [currentTrack]);
 
-  // Переключение Play / Pause
   const togglePlay = () => {
     const audio = audioRef.current;
 
@@ -79,7 +77,15 @@ function App() {
           <Route path="/Album" element={<Album />} />
           <Route path="/Genre" element={<Genre />} />
           <Route path="/Regstr" element={<Regstr />} />
-						<Route path="/profile" element={<Profile />} />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Артисты */}
           <Route path="/Mirbek" element={<Mirbek />} />
@@ -89,7 +95,6 @@ function App() {
           <Route path="/Ulukmanapo" element={<Ulukmanapo />} />
           <Route path="/Nurlan" element={<Nurlan />} />
           <Route path="/Nurila" element={<Nurila />} />
-				
 
           {/* Страница альбома с передачей функции установки трека */}
           <Route
