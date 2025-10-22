@@ -3,7 +3,7 @@ import './css/menu.css';
 import './css/popup.css';
 import { NavLink, useNavigate } from "react-router-dom";
 import login from './img/Frame.svg';
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 import {
   signInWithEmailAndPassword,
   signOut,
