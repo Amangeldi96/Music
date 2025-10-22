@@ -7,7 +7,7 @@ export default function Album() {
   const albums = [
   { albumClass: "album-block1", albumName: "Мирбек Аиабеков", link: "/Mirbek" },
   { albumClass: "album-block2", albumName: "Jax 02.14", link: "/Jax" },
-  { albumClass: "album-block3", albumName: "Гулжигит Сатыбеков", link: "/Freeman" },
+  { albumClass: "album-block3", albumName: "Гүлжигит Сатыбеков", link: "/Guljigit" },
   { albumClass: "album-block4", albumName: "Нурлан Насип", link: "/Nurlan" },
     { albumClass: "album-block5", albumName: "Илъяз Абдыразаков" , link: "/Iliaz" },
     { albumClass: "album-block6", albumName: "Мирлан Баеков" , link: "/Mirlan" },

@@ -35,6 +35,16 @@ const albumData = [
       { title: "Жубайым", src: jubaiym },
     ],
   },
+	  {
+    albumName: "Гүлжигит Сатыбеков",
+    description: "Кыргыз эл артиси.",
+    image: album2,
+    tracks: [
+      { title: "Өзгөчө күн", src: ozgochokun },
+      { title: "Таранчым", src: taranchym },
+      { title: "Жубайым", src: jubaiym },
+    ],
+  },
 ];
 
 export default function AlbumPage() {
