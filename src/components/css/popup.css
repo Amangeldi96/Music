@@ -111,7 +111,7 @@ input{
 }
 .regs{
 	position: absolute;
-	margin-top: -10px;
+	margin-top: -15px;
 	color: #0d66b8;
 	text-transform: uppercase;
 }
