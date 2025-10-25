@@ -35,7 +35,16 @@ export default function Regstr() {
     if (error) {
       setMessage('❌ Ошибка регистрации: ' + error.message);
     } else {
-      setMessage('✅ Регистрация успешна! Проверь почту для подтверждения.');
+      setMessage('✅ Регистрация успешна! Вход выполнен.');
+
+      // Сохраняем вход
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', email);
+
+      // Закрываем попап входа
+      const checkbox = document.getElementById("p1");
+      if (checkbox) checkbox.checked = false;
+
       setTimeout(() => {
         navigate('/profile');
       }, 1500);
