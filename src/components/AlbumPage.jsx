@@ -61,8 +61,8 @@ const albumData = [
     image: album4,
     tracks: [
       { title: "Алып кетем Бишкеке", src: ozgochokunAlyp_ketem_Bishkeke },
-      { title: "Сен болчу жанымда", src: taranchym },
-      { title: "Керексиң", src: jubaiym },
+      { title: "Сен болчу жанымда", src: sen-bolchu-zhanymda },
+      { title: "Керексиң", src: kereksin },
     ],
   },
 ];
