@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../SupabaseClient"; // подключение SDK
+import { supabase } from "../SupabaseClient";
 import './css/regstr.css';
 
 export default function Regstr() {
@@ -10,7 +10,6 @@ export default function Regstr() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  // Закрытие попапа входа при загрузке страницы
   useEffect(() => {
     const checkbox = document.getElementById("p1");
     if (checkbox) checkbox.checked = false;
@@ -35,19 +34,23 @@ export default function Regstr() {
     if (error) {
       setMessage('❌ Ошибка регистрации: ' + error.message);
     } else {
-      setMessage('✅ Регистрация успешна! Вход выполнен.');
+      // Попытка получить активную сессию
+      const { data: sessionData } = await supabase.auth.getSession();
 
-      // Сохраняем вход
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', email);
+      if (sessionData.session) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', sessionData.session.user.email);
 
-      // Закрываем попап входа
-      const checkbox = document.getElementById("p1");
-      if (checkbox) checkbox.checked = false;
+        const checkbox = document.getElementById("p1");
+        if (checkbox) checkbox.checked = false;
 
-      setTimeout(() => {
-        navigate('/profile');
-      }, 1500);
+        setMessage('✅ Регистрация успешна! Вход выполнен.');
+        setTimeout(() => {
+          navigate('/profile');
+        }, 1500);
+      } else {
+        setMessage('✅ Регистрация успешна! Проверь почту для подтверждения.');
+      }
     }
   };
 
