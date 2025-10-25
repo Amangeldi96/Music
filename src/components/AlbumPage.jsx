@@ -6,6 +6,7 @@ import { useParams, useLocation } from "react-router-dom";
 import album1 from "./img/Album1.jpeg";
 import album2 from "./img/Album2.jpeg";
 import album3 from "./img/Album3.jpeg";
+import album4 from "./img/Album4.jpeg";
 
 import track1 from "./assets/Album/Mirbek/mirbek-atabekov-kechki-bishkek.mp3";
 import track2 from "./assets/Album/Mirbek/mirbek-atabekov-oshondo.mp3";
@@ -14,6 +15,14 @@ import track3 from "./assets/Album/Mirbek/a_169681.mp3";
 import ozgochokun from "./assets/Album/jax-02.14/song2.mp3";
 import taranchym from "./assets/Album/jax-02.14/song17.mp3";
 import jubaiym from "./assets/Album/jax-02.14/song14.mp3";
+
+import Alyp_ketem_Bishkeke from "./assets/Album/Guljigit_Satybekov/song3.mp3";
+import sen-bolchu-zhanymda from "./assets/Album/Guljigit_Satybekov/song7.mp3";
+import kereksin from "./assets/Album/Guljigit_Satybekov/song12.mp3";
+
+import ozgochokunAlyp_ketem_Bishkeke from "./assets/Album/Nurlan_Nasip/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
+import  from "./assets/Album/Nurlan_Nasip/nurlan-nasip-sen-bolchu-zhanymda.mp3";
+import jubaiym from "./assets/Album/Nurlan_Nasip/Нурлан Насип - Керексиң.mp3";
 
 const albumData = [
   {
@@ -41,9 +50,19 @@ const albumData = [
     description: "Кыргыз эл артиси.",
     image: album3,
     tracks: [
-      { title: "Өзгөчө күн", src: ozgochokun },
-      { title: "Таранчым", src: taranchym },
-      { title: "Жубайым", src: jubaiym },
+      { title: "Өзгөчө күн", src: Alyp_ketem_Bishkeke },
+      { title: "Таранчым", src: sen-bolchu-zhanymda },
+      { title: "Жубайым", src: kereksin },
+    ],
+  },
+		  {
+    albumName: "Нурлан Насип",
+    description: "Кыргыз эл артиси.",
+    image: album4,
+    tracks: [
+      { title: "Алып кетем Бишкеке", src: ozgochokunAlyp_ketem_Bishkeke },
+      { title: "Сен болчу жанымда", src: taranchym },
+      { title: "Керексиң", src: jubaiym },
     ],
   },
 ];
