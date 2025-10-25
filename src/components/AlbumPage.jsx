@@ -20,7 +20,7 @@ import stambul from "./assets/Album/Guljigit/gulzhigit_satybekov_stambul.mp3";
 import aibike from "./assets/Album/Guljigit/a_52121.mp3";
 import moskva from "./assets/Album/Guljigit/a_270731.mp3";
 
-import Alyp_ketem_Bishkeke from "./assets/Album/Nurlan/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
+import Alyp_ketem_Bishkeke from "./assets/Album/Nurlan/Alyp_ketem_Bishkeke.mp3";
 import sen_bolchu_zhanymda from "./assets/Album/Nurlan/nurlan-nasip-sen-bolchu-zhanymda.mp3";
 import kereksin from "./assets/Album/Nurlan/nurlan-nasip-kereksin.mp3"; 
 
