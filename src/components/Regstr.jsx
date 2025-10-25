@@ -33,24 +33,25 @@ export default function Regstr() {
 
     if (error) {
       setMessage('❌ Ошибка регистрации: ' + error.message);
+      return;
+    }
+
+    // Проверяем, активна ли сессия сразу после регистрации
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', session.user.email);
+
+      const checkbox = document.getElementById("p1");
+      if (checkbox) checkbox.checked = false;
+
+      setMessage('✅ Регистрация успешна! Вход выполнен.');
+      setTimeout(() => {
+        navigate('/profile');
+      }, 1500);
     } else {
-      // Получаем активную сессию
-      const { data: sessionData } = await supabase.auth.getSession();
-
-      if (sessionData.session) {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', sessionData.session.user.email);
-
-        const checkbox = document.getElementById("p1");
-        if (checkbox) checkbox.checked = false;
-
-        setMessage('✅ Регистрация успешна! Вход выполнен.');
-        setTimeout(() => {
-          navigate('/profile');
-        }, 1500);
-      } else {
-        setMessage('⚠️ Регистрация прошла, но сессия не активна.');
-      }
+      setMessage('⚠️ Регистрация прошла, но сессия не активна. Проверь настройки Supabase.');
     }
   };
 
