@@ -20,9 +20,9 @@ import stambul from "./assets/Album/Guljigit/gulzhigit_satybekov_stambul.mp3";
 import aibike from "./assets/Album/Guljigit/a_52121.mp3";
 import moskva from "./assets/Album/Guljigit/a_270731.mp3";
 
-import ozgochokunAlyp_ketem_Bishkeke from "./assets/Album/Nurlan_Nasip/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
-import sen_bolchu_zhanymda from "./assets/Album/Nurlan_Nasip/nurlan-nasip-sen-bolchu-zhanymda.mp3";
-import kereksin from "./assets/Album/Nurlan_Nasip/nurlan-nasip-kereksin.mp3"; 
+import Alyp_ketem_Bishkeke from "./assets/Album/Nurlan/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
+import sen_bolchu_zhanymda from "./assets/Album/Nurlan/nurlan-nasip-sen-bolchu-zhanymda.mp3";
+import kereksin from "./assets/Album/Nurlan/nurlan-nasip-kereksin.mp3"; 
 
 const albumData = [
   {
@@ -60,7 +60,7 @@ const albumData = [
     description: "Кыргыз эл артиси.",
     image: album4,
     tracks: [
-      { title: "Алып кетем Бишкеке", src: ozgochokunAlyp_ketem_Bishkeke },
+      { title: "Алып кетем Бишкеке", src: Alyp_ketem_Bishkeke },
       { title: "Сен болчу жанымда", src: sen_bolchu_zhanymda },
       { title: "Керексиң", src: kereksin },
     ],
