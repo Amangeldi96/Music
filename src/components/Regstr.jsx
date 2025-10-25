@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../SupabaseClient"; // подключение SDK
 import './css/regstr.css';
@@ -9,6 +9,12 @@ export default function Regstr() {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  // Закрытие попапа входа при загрузке страницы
+  useEffect(() => {
+    const checkbox = document.getElementById("p1");
+    if (checkbox) checkbox.checked = false;
+  }, []);
 
   const handleRegister = async () => {
     if (!email || !password || !repeatPassword) {
