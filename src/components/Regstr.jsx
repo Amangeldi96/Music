@@ -26,32 +26,35 @@ export default function Regstr() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error) {
-      setMessage('❌ Ошибка регистрации: ' + error.message);
+    if (signUpError) {
+      setMessage('❌ Ошибка регистрации: ' + signUpError.message);
       return;
     }
 
-    // Проверяем, активна ли сессия сразу после регистрации
-    const { data: { session } } = await supabase.auth.getSession();
+    // Пробуем войти вручную
+    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (session) {
+    if (loginError) {
+      setMessage('⚠️ Регистрация прошла, но вход невозможен. Проверь настройки Supabase.');
+    } else {
       localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', session.user.email);
+      localStorage.setItem('userEmail', email);
 
       const checkbox = document.getElementById("p1");
       if (checkbox) checkbox.checked = false;
 
-      setMessage('✅ Регистрация успешна! Вход выполнен.');
+      setMessage('✅ Регистрация и вход успешны!');
       setTimeout(() => {
         navigate('/profile');
       }, 1500);
-    } else {
-      setMessage('⚠️ Регистрация прошла, но сессия не активна. Проверь настройки Supabase.');
     }
   };
 
