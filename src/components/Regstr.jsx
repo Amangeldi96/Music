@@ -34,7 +34,7 @@ export default function Regstr() {
     if (error) {
       setMessage('❌ Ошибка регистрации: ' + error.message);
     } else {
-      // Попытка получить активную сессию
+      // Получаем активную сессию
       const { data: sessionData } = await supabase.auth.getSession();
 
       if (sessionData.session) {
@@ -49,7 +49,7 @@ export default function Regstr() {
           navigate('/profile');
         }, 1500);
       } else {
-        setMessage('✅ Регистрация успешна! Проверь почту для подтверждения.');
+        setMessage('⚠️ Регистрация прошла, но сессия не активна.');
       }
     }
   };
