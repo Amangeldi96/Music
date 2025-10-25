@@ -36,7 +36,7 @@ export default function Regstr() {
       return;
     }
 
-    // Пробуем войти вручную
+    // Пробуем войти вручную сразу после регистрации
     const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
