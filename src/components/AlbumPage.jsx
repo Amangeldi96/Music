@@ -22,7 +22,7 @@ import moskva from "./assets/Album/Guljigit/a_270731.mp3";
 
 import ozgochokunAlyp_ketem_Bishkeke from "./assets/Album/Nurlan_Nasip/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
 import sen_bolchu_zhanymda from "./assets/Album/Nurlan_Nasip/nurlan-nasip-sen-bolchu-zhanymda.mp3";
-import kereksin from "./assets/Album/Nurlan_Nasip/kereksin.mp3";
+import kereksin from "./assets/Album/Nurlan_Nasip/nurlan-nasip-kereksin.mp3"; 
 
 const albumData = [
   {
@@ -45,7 +45,7 @@ const albumData = [
       { title: "Жубайым", src: jubaiym },
     ],
   },
-	  {
+  {
     albumName: "Гүлжигит Сатыбеков",
     description: "Кыргыз эл артиси.",
     image: album3,
@@ -55,7 +55,7 @@ const albumData = [
       { title: "Москва2", src: moskva },
     ],
   },
-		  {
+  {
     albumName: "Нурлан Насип",
     description: "Кыргыз эл артиси.",
     image: album4,
@@ -70,7 +70,8 @@ const albumData = [
 export default function AlbumPage() {
   const { albumId } = useParams();
   const location = useLocation();
-  const album = albumData[albumId] || null;
+  const albumIndex = parseInt(albumId, 10); // ✅ исправлено
+  const album = albumData[albumIndex] || null;
 
   const audioRef = useRef(new Audio());
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -80,7 +81,6 @@ export default function AlbumPage() {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
 
-  // Останавливаем музыку при переходе на другую страницу или размонтировании компонента
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -92,10 +92,8 @@ export default function AlbumPage() {
       setActiveIndex(null);
     };
 
-    // Остановка при смене маршрута
     stopMusic();
 
-    // Возврат cleanup при размонтировании
     return () => {
       stopMusic();
       audio.src = "";
@@ -103,7 +101,6 @@ export default function AlbumPage() {
     };
   }, [location.pathname]);
 
-  // Запуск трека
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -117,7 +114,6 @@ export default function AlbumPage() {
     }
   }, [currentTrack]);
 
-  // Таймлапс (прогресс трека)
   useEffect(() => {
     const audio = audioRef.current;
 
