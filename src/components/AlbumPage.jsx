@@ -22,7 +22,7 @@ import moskva from "./assets/Album/Guljigit/a_270731.mp3";
 
 import ozgochokunAlyp_ketem_Bishkeke from "./assets/Album/Nurlan_Nasip/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
 import sen_bolchu_zhanymda from "./assets/Album/Nurlan_Nasip/nurlan-nasip-sen-bolchu-zhanymda.mp3";
-import jubaiym from "./assets/Album/Nurlan_Nasip/Нурлан Насип - Керексиң.mp3";
+import kereksin from "./assets/Album/Nurlan_Nasip/Нурлан Насип - Керексиң.mp3";
 
 const albumData = [
   {
