@@ -40,7 +40,8 @@
 
 .popup {
 	margin: 120px auto;
-	padding: 25px;
+	padding: 20px;
+	padding-bottom: 60px;
 	background: #fff;
 	border-radius: 10px;
 	width: 300px;
