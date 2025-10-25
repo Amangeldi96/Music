@@ -5,21 +5,21 @@ import { Link } from "react-router-dom";
 
 export default function Album() {
   const albums = [
-  { albumClass: "album-block1", albumName: "Мирбек Аиабеков", link: "/Mirbek" },
-  { albumClass: "album-block2", albumName: "Jax 02.14", link: "/Jax" },
-  { albumClass: "album-block3", albumName: "Гүлжигит Сатыбеков", link: "/Guljigit" },
-  { albumClass: "album-block4", albumName: "Нурлан Насип", link: "/Nurlan" },
-    { albumClass: "album-block5", albumName: "Илъяз Абдыразаков" , link: "/Iliaz" },
-    { albumClass: "album-block6", albumName: "Мирлан Баеков" , link: "/Mirlan" },
-    { albumClass: "album-block7", albumName: "Нурайым Акылбекова" , link: "/Nuraiym" },
-    { albumClass: "album-block8", albumName: "Xamdam Sobirov" , link: "/Xamdam" },
-    { albumClass: "album-block9", albumName: "Муниса Ризаева" , link: "/Minusa" },
-    { albumClass: "album-block10", albumName: "Райм" , link: "/Raim" },
-    { albumClass: "album-block11", albumName: "Рахымжан Жакайым" , link: "/Raxymjan" },
-    { albumClass: "album-block12", albumName: "Ajiniyaz Xojambergenov" , link: "/Ajiniyaz" },
-    { albumClass: "album-block13", albumName: "Нурила" , link: "/Nurila" },
-    { albumClass: "album-block14", albumName: "Бек Борбиев" , link: "/Bek" },
-    { albumClass: "album-block15", albumName: "Кайрат Нуртас" , link: "/Kairat" },
+    { albumClass: "album-block1", albumName: "Мирбек Атабеков" },
+    { albumClass: "album-block2", albumName: "Jax 02.14" },
+    { albumClass: "album-block3", albumName: "Гүлжигит Сатыбеков" },
+    { albumClass: "album-block4", albumName: "Нурлан Насип" },
+    { albumClass: "album-block5", albumName: "Илъяз Абдыразаков" },
+    { albumClass: "album-block6", albumName: "Мирлан Баеков" },
+    { albumClass: "album-block7", albumName: "Нурайым Акылбекова" },
+    { albumClass: "album-block8", albumName: "Xamdam Sobirov" },
+    { albumClass: "album-block9", albumName: "Муниса Ризаева" },
+    { albumClass: "album-block10", albumName: "Райм" },
+    { albumClass: "album-block11", albumName: "Рахымжан Жакайым" },
+    { albumClass: "album-block12", albumName: "Ajiniyaz Xojambergenov" },
+    { albumClass: "album-block13", albumName: "Нурила" },
+    { albumClass: "album-block14", albumName: "Бек Борбиев" },
+    { albumClass: "album-block15", albumName: "Кайрат Нуртас" },
   ];
 
   return (
