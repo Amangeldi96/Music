@@ -16,9 +16,9 @@ import ozgochokun from "./assets/Album/jax-02.14/song2.mp3";
 import taranchym from "./assets/Album/jax-02.14/song17.mp3";
 import jubaiym from "./assets/Album/jax-02.14/song14.mp3";
 
-import Alyp_ketem_Bishkeke from "./assets/Album/Guljigit_Satybekov/song3.mp3";
-import sen_bolchu_zhanymda from "./assets/Album/Guljigit_Satybekov/song7.mp3";
-import kereksin from "./assets/Album/Guljigit_Satybekov/song12.mp3";
+import stambul from "./assets/Album/Guljigit/gulzhigit_satybekov_stambul.mp3";
+import aibike from "./assets/Album/Guljigit/a_52121.mp3";
+import moskva from "./assets/Album/Guljigit/a_270731.mp3";
 
 import ozgochokunAlyp_ketem_Bishkeke from "./assets/Album/Nurlan_Nasip/Nurlan_Nasip-Alyp_ketem_Bishkeke.mp3";
 import sen_bolchu_zhanymda from "./assets/Album/Nurlan_Nasip/nurlan-nasip-sen-bolchu-zhanymda.mp3";
@@ -50,9 +50,9 @@ const albumData = [
     description: "Кыргыз эл артиси.",
     image: album3,
     tracks: [
-      { title: "Өзгөчө күн", src: Alyp_ketem_Bishkeke },
-      { title: "Таранчым", src: sen_bolchu_zhanymda },
-      { title: "Жубайым", src: kereksin },
+      { title: "Стамбул", src: stambul },
+      { title: "Айбийке", src: aibike },
+      { title: "Москва2", src: moskva },
     ],
   },
 		  {
