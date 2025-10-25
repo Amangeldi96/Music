@@ -109,11 +109,11 @@ input{
 .text-b{
 	margin-top: 20px;
 }
-.regs{
-	position: absolute;
-	margin-top: -5px;
-	color: #0d66b8;
-	text-transform: uppercase;
+.regs {
+  position: absolute;
+  margin-top: 10px; 
+  color: #0d66b8;
+  text-transform: uppercase;
 }
 
 
