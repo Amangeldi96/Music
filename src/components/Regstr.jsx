@@ -11,7 +11,7 @@ export default function Regstr() {
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
-  // Отправка кода через локальный сервер
+  // Отправка кода через локальный сервер Node.js
   const handleSendCode = async () => {
     if (!email) {
       setMessage('❌ Введите email');
@@ -40,7 +40,7 @@ export default function Regstr() {
     }
   };
 
-  // Проверка кода и "регистрация"
+  // Проверка кода и завершение "регистрации"
   const handleRegister = () => {
     if (!email || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
