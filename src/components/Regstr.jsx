@@ -28,17 +28,22 @@ export default function Regstr() {
     setGeneratedCode(code);
 
     try {
-      const { error } = await supabase.functions.invoke('send-confirmation-email', {
-        body: { email, code }
+      const response = await fetch('https://iqvkeeegqhlibdjmjrdm.functions.supabase.co/send-confirmation-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, code })
       });
 
-      if (error) {
-        setMessage('❌ Ошибка отправки письма: ' + error.message);
+      if (!response.ok) {
+        const errorText = await response.text();
+        setMessage('❌ Ошибка отправки письма: ' + errorText);
       } else {
         setMessage('📧 Код подтверждения отправлен на email');
       }
     } catch (err) {
-      setMessage('❌ Ошибка соединения с функцией: ' + err.message);
+      setMessage('❌ Ошибка соединения: ' + err.message);
     }
   };
 
