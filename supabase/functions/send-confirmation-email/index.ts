@@ -5,12 +5,24 @@ Deno.serve(async (req) => {
     const { email, code } = await req.json();
 
     if (!email || !code) {
-      return new Response("Missing email or code", { status: 400 });
+      return new Response("Missing email or code", {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
     }
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
-      return new Response("Missing RESEND_API_KEY", { status: 500 });
+      return new Response("Missing RESEND_API_KEY", {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
     }
 
     const response = await fetch("https://api.resend.com/emails", {
@@ -29,14 +41,29 @@ Deno.serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return new Response(`Ошибка отправки письма: ${errorText}`, { status: 500 });
+      return new Response(`Ошибка отправки письма: ${errorText}`, {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
     }
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" },
       status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   } catch (err) {
-    return new Response(`Ошибка: ${err.message}`, { status: 500 });
+    return new Response(`Ошибка: ${err.message}`, {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
   }
 });
