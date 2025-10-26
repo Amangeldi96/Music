@@ -1,13 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
+import React, { useState } from "react";
 import './css/regstr.css';
-
-// Инициализация Supabase с ANON_KEY (без Service Role)
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 export default function Regstr() {
   const [email, setEmail] = useState('');
@@ -18,14 +10,8 @@ export default function Regstr() {
   const [generatedCode, setGeneratedCode] = useState('');
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkbox = document.getElementById("p1");
-    if (checkbox) checkbox.checked = false;
-  }, []);
-
-  // Отправка кода через Resend API
+  // Отправка кода на email через Resend API
   const handleSendCode = async () => {
     if (!email) {
       setMessage('❌ Введите email');
@@ -62,8 +48,8 @@ export default function Regstr() {
     }
   };
 
-  // Регистрация пользователя в Supabase
-  const handleRegister = async () => {
+  // Проверка кода и завершение "регистрации"
+  const handleRegister = () => {
     if (!email || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
       return;
@@ -79,43 +65,11 @@ export default function Regstr() {
       return;
     }
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (signUpError) {
-      setMessage('❌ Ошибка регистрации: ' + signUpError.message);
-      return;
-    }
-
-    const userId = signUpData?.user?.id;
-    if (userId) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([{ id: userId, username }]);
-
-      if (profileError) {
-        setMessage('⚠️ Ошибка при сохранении профиля: ' + profileError.message);
-        return;
-      }
-    }
-
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (loginError) {
-      setMessage('⚠️ Регистрация прошла, но вход невозможен. Проверь настройки Supabase.');
-    } else {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', email);
-      setMessage('✅ Регистрация и вход успешны!');
-      setTimeout(() => {
-        navigate('/profile');
-      }, 1500);
-    }
+    // Здесь можно сохранить данные пользователя локально или на сервере
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userEmail', email);
+    setMessage('✅ Регистрация успешна!');
+    setShowPopup(false);
   };
 
   return (
