@@ -11,7 +11,7 @@ export default function Regstr() {
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
-  // Отправка кода на email через Resend API
+  // Отправка кода через локальный сервер
   const handleSendCode = async () => {
     if (!email) {
       setMessage('❌ Введите email');
@@ -22,18 +22,10 @@ export default function Regstr() {
     setGeneratedCode(code);
 
     try {
-      const response = await fetch('https://api.resend.com/emails', {
+      const response = await fetch('http://localhost:3001/send-code', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.REACT_APP_RESEND_API_KEY}`
-        },
-        body: JSON.stringify({
-          from: 'hobbyplus312@gmail.com',
-          to: [email],
-          subject: 'Код подтверждения',
-          text: `Ваш код подтверждения: ${code}`
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
       });
 
       if (!response.ok) {
@@ -48,7 +40,7 @@ export default function Regstr() {
     }
   };
 
-  // Проверка кода и завершение "регистрации"
+  // Проверка кода и "регистрация"
   const handleRegister = () => {
     if (!email || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
@@ -65,7 +57,6 @@ export default function Regstr() {
       return;
     }
 
-    // Здесь можно сохранить данные пользователя локально или на сервере
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('userEmail', email);
     setMessage('✅ Регистрация успешна!');
