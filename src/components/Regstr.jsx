@@ -18,9 +18,9 @@ export default function Regstr() {
     if (checkbox) checkbox.checked = false;
   }, []);
 
-  const sendCodeToEmail = async () => {
+  const handleSendCode = async () => {
     if (!email) {
-      setMessage('❌ Введите email для отправки кода');
+      setMessage('❌ Введите email');
       return;
     }
 
@@ -69,7 +69,7 @@ export default function Regstr() {
       await supabase.from('profiles').insert([{ id: userId, nickname }]);
     }
 
-    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+    const { error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -123,7 +123,7 @@ export default function Regstr() {
         onChange={(e) => setRepeatPassword(e.target.value)}
       /> <br />
 
-      <button className="vx" onClick={sendCodeToEmail}>Отправить код подтверждения</button> <br />
+      <button className="vx" onClick={handleSendCode}>Отправить код подтверждения</button> <br />
 
       <input
         className="input"
