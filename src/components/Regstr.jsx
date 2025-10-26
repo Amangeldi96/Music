@@ -29,11 +29,10 @@ export default function Regstr() {
     setGeneratedCode(code);
 
     try {
-      const response = await fetch('https://iqvkeeegqhlibdjmjrdm.functions.supabase.co/send-confirmation-email', {
+      const response = await fetch('http://127.0.0.1:54321/functions/v1/send-confirmation-email', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Origin': 'https://music-musiclover.vercel.app'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email, code })
       });
