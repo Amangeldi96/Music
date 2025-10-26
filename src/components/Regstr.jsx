@@ -32,7 +32,8 @@ export default function Regstr() {
       const response = await fetch('https://iqvkeeegqhlibdjmjrdm.functions.supabase.co/send-confirmation-email', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Origin': 'https://music-musiclover.vercel.app'
         },
         body: JSON.stringify({ email, code })
       });
@@ -77,7 +78,14 @@ export default function Regstr() {
 
     const userId = signUpData?.user?.id;
     if (userId) {
-      await supabase.from('profiles').insert([{ id: userId, username }]);
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{ id: userId, username }]);
+
+      if (profileError) {
+        setMessage('⚠️ Ошибка при сохранении профиля: ' + profileError.message);
+        return;
+      }
     }
 
     const { error: loginError } = await supabase.auth.signInWithPassword({
