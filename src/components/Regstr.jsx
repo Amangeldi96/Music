@@ -5,8 +5,11 @@ import './css/regstr.css';
 
 export default function Regstr() {
   const [email, setEmail] = useState('');
+  const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [confirmationCode, setConfirmationCode] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
@@ -15,8 +18,28 @@ export default function Regstr() {
     if (checkbox) checkbox.checked = false;
   }, []);
 
+  const sendCodeToEmail = async () => {
+    if (!email) {
+      setMessage('❌ Введите email для отправки кода');
+      return;
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedCode(code);
+
+    const { error } = await supabase.functions.invoke('send-confirmation-email', {
+      body: { email, code }
+    });
+
+    if (error) {
+      setMessage('❌ Ошибка отправки письма: ' + error.message);
+    } else {
+      setMessage('📧 Код подтверждения отправлен на email');
+    }
+  };
+
   const handleRegister = async () => {
-    if (!email || !password || !repeatPassword) {
+    if (!email || !nickname || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
       return;
     }
@@ -26,7 +49,12 @@ export default function Regstr() {
       return;
     }
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    if (confirmationCode !== generatedCode) {
+      setMessage('❌ Неверный код подтверждения');
+      return;
+    }
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -36,7 +64,11 @@ export default function Regstr() {
       return;
     }
 
-    // Пробуем войти вручную сразу после регистрации
+    const userId = signUpData?.user?.id;
+    if (userId) {
+      await supabase.from('profiles').insert([{ id: userId, nickname }]);
+    }
+
     const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -47,10 +79,6 @@ export default function Regstr() {
     } else {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', email);
-
-      const checkbox = document.getElementById("p1");
-      if (checkbox) checkbox.checked = false;
-
       setMessage('✅ Регистрация и вход успешны!');
       setTimeout(() => {
         navigate('/profile');
@@ -73,6 +101,14 @@ export default function Regstr() {
 
       <input
         className="input"
+        type="text"
+        placeholder="Nickname"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+      /> <br />
+
+      <input
+        className="input"
         type="password"
         placeholder="Пароль"
         value={password}
@@ -85,6 +121,16 @@ export default function Regstr() {
         placeholder="Повторите пароль"
         value={repeatPassword}
         onChange={(e) => setRepeatPassword(e.target.value)}
+      /> <br />
+
+      <button className="vx" onClick={sendCodeToEmail}>Отправить код подтверждения</button> <br />
+
+      <input
+        className="input"
+        type="text"
+        placeholder="Код подтверждения"
+        value={confirmationCode}
+        onChange={(e) => setConfirmationCode(e.target.value)}
       /> <br />
 
       <button className="vx" onClick={handleRegister}>Регистрация</button>
