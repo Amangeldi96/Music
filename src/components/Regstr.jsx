@@ -27,14 +27,18 @@ export default function Regstr() {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedCode(code);
 
-    const { error } = await supabase.functions.invoke('send-confirmation-email', {
-      body: { email, code }
-    });
+    try {
+      const { error } = await supabase.functions.invoke('send-confirmation-email', {
+        body: { email, code }
+      });
 
-    if (error) {
-      setMessage('❌ Ошибка отправки письма: ' + error.message);
-    } else {
-      setMessage('📧 Код подтверждения отправлен на email');
+      if (error) {
+        setMessage('❌ Ошибка отправки письма: ' + error.message);
+      } else {
+        setMessage('📧 Код подтверждения отправлен на email');
+      }
+    } catch (err) {
+      setMessage('❌ Ошибка соединения с функцией: ' + err.message);
     }
   };
 
