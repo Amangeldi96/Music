@@ -4,8 +4,8 @@ Deno.serve(async (req) => {
   try {
     const { email, code } = await req.json();
 
-    if (!email || !code) {
-      return new Response("Missing email or code", {
+    if (!email || !code || code.length > 10 || email.length > 100) {
+      return new Response(JSON.stringify({ error: "Missing or invalid email/code" }), {
         status: 400,
         headers: {
           "Content-Type": "application/json",
@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
-      return new Response("Missing RESEND_API_KEY", {
+      return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY" }), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "noreply@yourdomain.com", // заменишь на свой домен
+        from: "noreply@yourdomain.com", // заменишь на подтверждённый домен
         to: email,
         subject: "Код подтверждения",
         html: `<p>Здравствуйте! Ваш код подтверждения: <strong>${code}</strong></p>`,
@@ -41,7 +41,8 @@ Deno.serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return new Response(`Ошибка отправки письма: ${errorText}`, {
+      console.error("Resend error:", errorText);
+      return new Response(JSON.stringify({ error: `Ошибка отправки письма: ${errorText}` }), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +59,8 @@ Deno.serve(async (req) => {
       },
     });
   } catch (err) {
-    return new Response(`Ошибка: ${err.message}`, {
+    console.error("Function error:", err);
+    return new Response(JSON.stringify({ error: `Ошибка: ${err.message}` }), {
       status: 500,
       headers: {
         "Content-Type": "application/json",
