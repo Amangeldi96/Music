@@ -5,12 +5,13 @@ import './css/regstr.css';
 
 export default function Regstr() {
   const [email, setEmail] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
   const [message, setMessage] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function Regstr() {
         setMessage('❌ Ошибка отправки письма: ' + errorText);
       } else {
         setMessage('📧 Код подтверждения отправлен на email');
+        setShowPopup(true);
       }
     } catch (err) {
       setMessage('❌ Ошибка соединения: ' + err.message);
@@ -48,7 +50,7 @@ export default function Regstr() {
   };
 
   const handleRegister = async () => {
-    if (!email || !nickname || !password || !repeatPassword || !confirmationCode) {
+    if (!email || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
       return;
     }
@@ -75,7 +77,7 @@ export default function Regstr() {
 
     const userId = signUpData?.user?.id;
     if (userId) {
-      await supabase.from('profiles').insert([{ id: userId, nickname }]);
+      await supabase.from('profiles').insert([{ id: userId, username }]);
     }
 
     const { error: loginError } = await supabase.auth.signInWithPassword({
@@ -111,9 +113,9 @@ export default function Regstr() {
       <input
         className="input"
         type="text"
-        placeholder="Nickname"
-        value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       /> <br />
 
       <input
@@ -134,17 +136,23 @@ export default function Regstr() {
 
       <button className="vx" onClick={handleSendCode}>Отправить код подтверждения</button> <br />
 
-      <input
-        className="input"
-        type="text"
-        placeholder="Код подтверждения"
-        value={confirmationCode}
-        onChange={(e) => setConfirmationCode(e.target.value)}
-      /> <br />
-
-      <button className="vx" onClick={handleRegister}>Регистрация</button>
-
       {message && <p className="reg-message">{message}</p>}
+
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>Введите код подтверждения</h3>
+            <input
+              className="input"
+              type="text"
+              placeholder="Код из email"
+              value={confirmationCode}
+              onChange={(e) => setConfirmationCode(e.target.value)}
+            />
+            <button className="vx" onClick={handleRegister}>Подтвердить и зарегистрироваться</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
