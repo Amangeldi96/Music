@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../SupabaseClient";
+import { createClient } from "@supabase/supabase-js";
 import './css/regstr.css';
+
+// Инициализация Supabase с ANON_KEY (без Service Role)
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 export default function Regstr() {
   const [email, setEmail] = useState('');
@@ -19,6 +25,7 @@ export default function Regstr() {
     if (checkbox) checkbox.checked = false;
   }, []);
 
+  // Отправка кода через Resend API
   const handleSendCode = async () => {
     if (!email) {
       setMessage('❌ Введите email');
@@ -29,12 +36,18 @@ export default function Regstr() {
     setGeneratedCode(code);
 
     try {
-      const response = await fetch('http://127.0.0.1:54321/functions/v1/send-confirmation-email', {
+      const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.REACT_APP_RESEND_API_KEY}`
         },
-        body: JSON.stringify({ email, code })
+        body: JSON.stringify({
+          from: 'hobbyplus312@gmail.com',
+          to: [email],
+          subject: 'Код подтверждения',
+          text: `Ваш код подтверждения: ${code}`
+        })
       });
 
       if (!response.ok) {
@@ -49,6 +62,7 @@ export default function Regstr() {
     }
   };
 
+  // Регистрация пользователя в Supabase
   const handleRegister = async () => {
     if (!email || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
