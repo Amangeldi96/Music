@@ -11,7 +11,6 @@ export default function Regstr() {
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
-  // Отправка кода через локальный сервер Node.js
   const handleSendCode = async () => {
     if (!email) {
       setMessage('❌ Введите email');
@@ -22,15 +21,16 @@ export default function Regstr() {
     setGeneratedCode(code);
 
     try {
-      const response = await fetch('http://localhost:3001/send-code', {
+      const response = await fetch('/api/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code })
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        setMessage('❌ Ошибка отправки письма: ' + errorText);
+        setMessage('❌ Ошибка отправки письма: ' + (result.error || ''));
       } else {
         setMessage('📧 Код подтверждения отправлен на email');
         setShowPopup(true);
@@ -40,7 +40,6 @@ export default function Regstr() {
     }
   };
 
-  // Проверка кода и завершение "регистрации"
   const handleRegister = () => {
     if (!email || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
