@@ -4,8 +4,9 @@ export default async function handler(req, res) {
   }
 
   const { email, code } = req.body;
-  if (!email || !code) {
-    return res.status(400).json({ error: 'Email и код обязательны' });
+
+  if (typeof email !== 'string' || typeof code !== 'string' || !email.trim() || !code.trim()) {
+    return res.status(400).json({ error: 'Email и код обязательны и должны быть строками' });
   }
 
   try {
@@ -23,13 +24,13 @@ export default async function handler(req, res) {
       })
     });
 
-    const contentType = response.headers.get('content-type');
-    const rawResponse = await response.text(); // 👈 логируем весь ответ
+    const contentType = response.headers.get('content-type') || '';
+    const rawResponse = await response.text();
 
-    console.log('📨 Resend response:', rawResponse); // 👈 лог в консоль Vercel
+    console.log('📨 Resend response:', rawResponse);
 
     if (!response.ok) {
-      if (contentType && contentType.includes('application/json')) {
+      if (contentType.includes('application/json')) {
         try {
           const errorJson = JSON.parse(rawResponse);
           return res.status(500).json({ error: errorJson.error || 'Ошибка API Resend' });
@@ -43,6 +44,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('❌ Ошибка отправки:', err);
+    return res.status(500).json({ error: err.message || 'Неизвестная ошибка' });
   }
 }
