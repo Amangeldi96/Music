@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: 'onboarding@resend.dev', // ✅ исправлено
+        from: 'onboarding@resend.dev',
         to: [email],
         subject: 'Код подтверждения',
         text: `Ваш код подтверждения: ${code}`
@@ -24,14 +24,20 @@ export default async function handler(req, res) {
     });
 
     const contentType = response.headers.get('content-type');
+    const rawResponse = await response.text(); // 👈 логируем весь ответ
+
+    console.log('📨 Resend response:', rawResponse); // 👈 лог в консоль Vercel
 
     if (!response.ok) {
       if (contentType && contentType.includes('application/json')) {
-        const errorJson = await response.json();
-        return res.status(500).json({ error: errorJson.error || 'Ошибка API Resend' });
+        try {
+          const errorJson = JSON.parse(rawResponse);
+          return res.status(500).json({ error: errorJson.error || 'Ошибка API Resend' });
+        } catch (parseErr) {
+          return res.status(500).json({ error: 'Ошибка парсинга JSON: ' + parseErr.message });
+        }
       } else {
-        const errorText = await response.text();
-        return res.status(500).json({ error: errorText });
+        return res.status(500).json({ error: rawResponse });
       }
     }
 
