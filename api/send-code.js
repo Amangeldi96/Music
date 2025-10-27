@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: 'hobbyplus312@gmail.com',
+        from: 'onboarding@resend.dev', // ✅ исправлено
         to: [email],
         subject: 'Код подтверждения',
         text: `Ваш код подтверждения: ${code}`
