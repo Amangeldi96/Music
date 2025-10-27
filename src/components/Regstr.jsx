@@ -2,29 +2,25 @@ import React, { useState } from "react";
 import './css/regstr.css';
 
 export default function Regstr() {
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
-  const [generatedCode, setGeneratedCode] = useState('');
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
   const handleSendCode = async () => {
-    if (!email) {
-      setMessage('❌ Введите email');
+    if (!phone) {
+      setMessage('❌ Введите номер телефона');
       return;
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(code);
-
     try {
-      const response = await fetch('/api/send-code', {
+      const response = await fetch('/api/send-sms-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code })
+        body: JSON.stringify({ phone })
       });
 
       const contentType = response.headers.get('content-type');
@@ -32,23 +28,23 @@ export default function Regstr() {
       if (!response.ok) {
         if (contentType && contentType.includes('application/json')) {
           const errorJson = await response.json();
-          setMessage('❌ Ошибка отправки письма: ' + (errorJson.error || ''));
+          setMessage('❌ Ошибка отправки SMS: ' + (errorJson.error || ''));
         } else {
           const errorText = await response.text();
-          setMessage('❌ Ошибка отправки письма: ' + errorText);
+          setMessage('❌ Ошибка отправки SMS: ' + errorText);
         }
         return;
       }
 
-      setMessage('📧 Код подтверждения отправлен на email');
+      setMessage('📲 Код подтверждения отправлен на телефон');
       setShowPopup(true);
     } catch (err) {
       setMessage('❌ Ошибка соединения: ' + err.message);
     }
   };
 
-  const handleRegister = () => {
-    if (!email || !username || !password || !repeatPassword || !confirmationCode) {
+  const handleRegister = async () => {
+    if (!phone || !username || !password || !repeatPassword || !confirmationCode) {
       setMessage('❌ Заполните все поля');
       return;
     }
@@ -58,15 +54,27 @@ export default function Regstr() {
       return;
     }
 
-    if (confirmationCode !== generatedCode) {
-      setMessage('❌ Неверный код подтверждения');
-      return;
-    }
+    try {
+      const response = await fetch('/api/verify-sms-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code: confirmationCode })
+      });
 
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', email);
-    setMessage('✅ Регистрация успешна!');
-    setShowPopup(false);
+      const result = await response.json();
+
+      if (!result.verified) {
+        setMessage('❌ Неверный код подтверждения');
+        return;
+      }
+
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userPhone', phone);
+      setMessage('✅ Регистрация успешна!');
+      setShowPopup(false);
+    } catch (err) {
+      setMessage('❌ Ошибка проверки кода: ' + err.message);
+    }
   };
 
   return (
@@ -77,9 +85,9 @@ export default function Regstr() {
       <input
         className="input"
         type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Номер телефона (+996...)"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
       /> <br />
 
       <input
@@ -113,11 +121,11 @@ export default function Regstr() {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
-            <h3>Введите код подтверждения</h3>
+            <h3>Введите код из SMS</h3>
             <input
               className="input"
               type="text"
-              placeholder="Код из email"
+              placeholder="Код из SMS"
               value={confirmationCode}
               onChange={(e) => setConfirmationCode(e.target.value)}
             />
