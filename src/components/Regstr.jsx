@@ -27,14 +27,21 @@ export default function Regstr() {
         body: JSON.stringify({ email, code })
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get('content-type');
 
       if (!response.ok) {
-        setMessage('❌ Ошибка отправки письма: ' + (result.error || ''));
-      } else {
-        setMessage('📧 Код подтверждения отправлен на email');
-        setShowPopup(true);
+        if (contentType && contentType.includes('application/json')) {
+          const errorJson = await response.json();
+          setMessage('❌ Ошибка отправки письма: ' + (errorJson.error || ''));
+        } else {
+          const errorText = await response.text();
+          setMessage('❌ Ошибка отправки письма: ' + errorText);
+        }
+        return;
       }
+
+      setMessage('📧 Код подтверждения отправлен на email');
+      setShowPopup(true);
     } catch (err) {
       setMessage('❌ Ошибка соединения: ' + err.message);
     }
