@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './css/regstr.css';
 
 export default function Regstr() {
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+996');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -10,14 +10,26 @@ export default function Regstr() {
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+
+    // Автозаполнение +996
+    if (!value.startsWith('+996')) {
+      value = '+996' + value.replace(/^\+*/, '');
+    }
+
+    setPhone(value);
+    setMessage('');
+  };
+
   const handleSendCode = async () => {
-    if (!phone) {
-      setMessage('❌ Введите номер телефона');
+    if (!phone || phone.length < 10) {
+      setMessage('❌ Введите корректный номер телефона');
       return;
     }
 
     try {
-      const response = await fetch('/api/send-sms-code', {
+      const response = await fetch('/api/send-sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
@@ -87,7 +99,7 @@ export default function Regstr() {
         type="text"
         placeholder="Номер телефона (+996...)"
         value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        onChange={handlePhoneChange}
       /> <br />
 
       <input
