@@ -14,7 +14,13 @@ const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKE
 
 // ✅ Отправка SMS-кода
 app.post('/send-sms', async (req, res) => {
+  if (!req.headers['content-type']?.includes('application/json')) {
+    return res.status(415).json({ error: 'Content-Type должен быть application/json' });
+  }
+
   const { phone } = req.body;
+
+  console.log('📞 Получен номер:', phone);
 
   if (!phone || typeof phone !== 'string' || !phone.trim()) {
     return res.status(400).json({ error: 'Номер телефона обязателен и должен быть строкой' });
@@ -38,10 +44,20 @@ app.post('/send-sms', async (req, res) => {
 
 // ✅ Проверка SMS-кода
 app.post('/verify-sms', async (req, res) => {
+  if (!req.headers['content-type']?.includes('application/json')) {
+    return res.status(415).json({ error: 'Content-Type должен быть application/json' });
+  }
+
   const { phone, code } = req.body;
 
-  if (!phone || !code) {
-    return res.status(400).json({ error: 'Телефон и код обязательны' });
+  console.log('🔍 Проверка номера:', phone, 'и кода:', code);
+
+  if (!phone || typeof phone !== 'string' || !phone.trim()) {
+    return res.status(400).json({ error: 'Телефон обязателен и должен быть строкой' });
+  }
+
+  if (!code || typeof code !== 'string' || !code.trim()) {
+    return res.status(400).json({ error: 'Код обязателен и должен быть строкой' });
   }
 
   try {
@@ -53,7 +69,7 @@ app.post('/verify-sms', async (req, res) => {
       });
 
     const verified = verificationCheck.status === 'approved';
-    console.log('🔍 Проверка кода:', verificationCheck.status);
+    console.log('🔍 Статус проверки:', verificationCheck.status);
 
     res.json({ verified });
   } catch (error) {
