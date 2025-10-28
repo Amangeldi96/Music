@@ -2,10 +2,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 Deno.serve(async (req) => {
   try {
-    const { email, code } = await req.json();
+    const { phone } = await req.json();
 
-    if (!email || !code || code.length > 10 || email.length > 100) {
-      return new Response(JSON.stringify({ error: "Missing or invalid email/code" }), {
+    if (!phone || typeof phone !== "string" || phone.length > 20) {
+      return new Response(JSON.stringify({ error: "Неверный номер телефона" }), {
         status: 400,
         headers: {
           "Content-Type": "application/json",
@@ -14,9 +14,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendApiKey) {
-      return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY" }), {
+    const sid = Deno.env.get("TWILIO_SID");
+    const token = Deno.env.get("TWILIO_AUTH_TOKEN");
+    const verifySid = Deno.env.get("TWILIO_VERIFY_SID");
+
+    if (!sid || !token || !verifySid) {
+      return new Response(JSON.stringify({ error: "Twilio переменные окружения не заданы" }), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -25,24 +28,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    const response = await fetch("https://api.resend.com/emails", {
+    const auth = btoa(`${sid}:${token}`);
+
+    const response = await fetch(`https://verify.twilio.com/v2/Services/${verifySid}/Verifications`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify({
-        from: "noreply@yourdomain.com", // заменишь на подтверждённый домен
-        to: email,
-        subject: "Код подтверждения",
-        html: `<p>Здравствуйте! Ваш код подтверждения: <strong>${code}</strong></p>`,
+      body: new URLSearchParams({
+        to: phone,
+        channel: "sms",
       }),
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Resend error:", errorText);
-      return new Response(JSON.stringify({ error: `Ошибка отправки письма: ${errorText}` }), {
+      console.error("Twilio error:", result);
+      return new Response(JSON.stringify({ error: result.message || "Ошибка Twilio" }), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +55,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, status: result.status }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
