@@ -1,16 +1,12 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   try {
-    const { phone } = await req.json();
+    const body = (await req.json()) as { phone?: string };
+    const { phone } = body;
 
     if (!phone || typeof phone !== "string" || phone.length > 20) {
       return new Response(JSON.stringify({ error: "Неверный номер телефона" }), {
         status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       });
     }
 
@@ -21,55 +17,47 @@ Deno.serve(async (req) => {
     if (!sid || !token || !verifySid) {
       return new Response(JSON.stringify({ error: "Twilio переменные окружения не заданы" }), {
         status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       });
     }
 
     const auth = btoa(`${sid}:${token}`);
 
-    const response = await fetch(`https://verify.twilio.com/v2/Services/${verifySid}/Verifications`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        to: phone,
-        channel: "sms",
-      }),
-    });
+    const params = new URLSearchParams();
+    params.append("To", phone);
+    params.append("Channel", "sms");
 
-    const result = await response.json();
+    const response = await fetch(
+      `https://verify.twilio.com/v2/Services/${verifySid}/Verifications`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      }
+    );
+
+    const result: { status?: string; message?: string } = await response.json();
 
     if (!response.ok) {
       console.error("Twilio error:", result);
       return new Response(JSON.stringify({ error: result.message || "Ошибка Twilio" }), {
         status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       });
     }
 
     return new Response(JSON.stringify({ success: true, status: result.status }), {
       status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Function error:", err);
     return new Response(JSON.stringify({ error: `Ошибка: ${err.message}` }), {
       status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
     });
   }
 });
