@@ -2,10 +2,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 Deno.serve(async (req) => {
   try {
-    const { phone } = await req.json();
+    const { email, code } = await req.json();
 
-    if (!phone || typeof phone !== "string" || phone.length > 20) {
-      return new Response(JSON.stringify({ error: "Неверный номер телефона" }), {
+    if (!email || !code || code.length > 10 || email.length > 100) {
+      return new Response(JSON.stringify({ error: "Missing or invalid email/code" }), {
         status: 400,
         headers: {
           "Content-Type": "application/json",
@@ -14,12 +14,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const sid = Deno.env.get("TWILIO_SID");
-    const token = Deno.env.get("TWILIO_AUTH_TOKEN");
-    const verifySid = Deno.env.get("TWILIO_VERIFY_SID");
-
-    if (!sid || !token || !verifySid) {
-      return new Response(JSON.stringify({ error: "Twilio переменные окружения не заданы" }), {
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY" }), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -28,25 +25,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const auth = btoa(`${sid}:${token}`);
-
-    const response = await fetch(`https://verify.twilio.com/v2/Services/${verifySid}/Verifications`, {
+    const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
       },
-      body: new URLSearchParams({
-        to: phone,
-        channel: "sms",
+      body: JSON.stringify({
+        from: "noreply@yourdomain.com", // заменишь на подтверждённый домен
+        to: email,
+        subject: "Код подтверждения",
+        html: `<p>Здравствуйте! Ваш код подтверждения: <strong>${code}</strong></p>`,
       }),
     });
 
-    const result = await response.json();
-
     if (!response.ok) {
-      console.error("Twilio error:", result);
-      return new Response(JSON.stringify({ error: result.message || "Ошибка Twilio" }), {
+      const errorText = await response.text();
+      console.error("Resend error:", errorText);
+      return new Response(JSON.stringify({ error: `Ошибка отправки письма: ${errorText}` }), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +51,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ success: true, status: result.status }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
